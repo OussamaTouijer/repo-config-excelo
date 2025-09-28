@@ -1,0 +1,67 @@
+# Configuration CORS partagée pour tous les microservices Excelo
+# Ce fichier peut être inclus dans chaque service via Spring Cloud Config
+
+excelo:
+  cors:
+    # Origins autorisées - ajoutez vos URLs frontend ici
+    allowed-origins:
+      - "http://localhost:3000"      # React/Next.js (dev)
+      - "http://localhost:4200"      # Angular (dev)
+      - "http://localhost:5173"      # Vite (dev)
+      - "http://localhost:8080"      # Frontend production local
+      - "http://localhost:8888"      # Gateway service
+      - "https://app.excelo.com"     # Production frontend (remplacez par votre domaine)
+      - "https://admin.excelo.com"   # Admin frontend (remplacez par votre domaine)
+
+    # Méthodes HTTP autorisées
+    allowed-methods:
+      - "GET"
+      - "POST"
+      - "PUT"
+      - "DELETE"
+      - "OPTIONS"
+      - "PATCH"
+      - "HEAD"
+
+    # Headers autorisés
+    allowed-headers:
+      - "*"
+
+    # Headers exposés aux clients
+    exposed-headers:
+      - "Authorization"
+      - "Content-Disposition"
+      - "X-Total-Count"
+      - "Content-Range"
+      - "X-Request-ID"
+
+    # Autoriser les credentials (cookies, authorization headers)
+    allow-credentials: true
+
+    # Durée de mise en cache des informations CORS (en secondes)
+    max-age: 3600
+
+# Configuration spécifique par environnement
+---
+spring:
+  profiles: development
+
+excelo:
+  cors:
+    # En développement, soyez plus permissif
+    allowed-origins:
+      - "http://localhost:*"
+      - "http://127.0.0.1:*"
+    max-age: 86400  # 24 heures pour éviter les requêtes preflight fréquentes
+
+---
+spring:
+  profiles: production
+
+excelo:
+  cors:
+    # En production, soyez plus restrictif
+    allowed-origins:
+      - "https://app.excelo.com"
+      - "https://admin.excelo.com"
+    max-age: 86400
